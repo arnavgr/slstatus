@@ -18,16 +18,15 @@ static const char ethernet_status[] =
         fi; \
     fi";
 
-static const char wifi_status[] = 
-    "wifi_iface=$(iw dev | grep -oP 'Interface \K\w+'); \
-    if [ -n \"$wifi_iface\" ]; then \
-        if [ \"$(cat /sys/class/net/$wifi_iface/operstate)\" = \"up\" ]; then \
-            wifi_ssid=$(iw dev $wifi_iface link | grep 'SSID' | awk '{print $2}'); \
-            if [ -n \"$wifi_ssid\" ]; then \
-                echo \"$wifi_ssid\"; \
-            fi; \
+static const char wifi_status[] = "wifi_iface=$(iw dev | grep -oP 'Interface \\K\\w+' | head -n 1); \
+if [ -n \"$wifi_iface\" ]; then \
+    if [ \"$(cat /sys/class/net/$wifi_iface/operstate)\" = \"up\" ]; then \
+        wifi_ssid=$(iw dev $wifi_iface link | grep -oP 'SSID: \\K.*'); \
+        if [ -n \"$wifi_ssid\" ]; then \
+            echo \"$wifi_ssid\"; \
         fi; \
-    fi";
+    fi; \
+fi";
 
 static const char swap_status[] = 
     "swap_usage=$(free -h | grep Swap | awk '{print $3 \"/\" $2}'); echo $swap_usage";
